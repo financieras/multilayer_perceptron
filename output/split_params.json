@@ -1,8 +1,0 @@
-{
-    "train_size": 456,
-    "test_size": 113,
-    "train_pct": 0.8014059753954306,
-    "test_pct": 0.19859402460456943,
-    "stratify": true,
-    "random_state": 42
-}
