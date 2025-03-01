@@ -1,5 +1,8 @@
 # Configuración y parámetros del proyecto
 
+# Semilla para reproducibilidad
+RANDOM_STATE = 42
+
 # Diccionario con los nombres completos de las características del Wisconsin Breast Cancer Dataset
 FEATURE_NAMES = {
     'f01': 'mean radius',
