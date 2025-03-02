@@ -1,8 +1,5 @@
 # Configuración y parámetros del proyecto
 
-# Semilla para reproducibilidad
-RANDOM_STATE = 42
-
 # Diccionario con los nombres completos de las características del Wisconsin Breast Cancer Dataset
 FEATURE_NAMES = {
     'f01': 'mean radius',
@@ -36,3 +33,9 @@ FEATURE_NAMES = {
     'f29': 'worst symmetry',
     'f30': 'worst fractal dimension'
 }
+
+
+RANDOM_STATE = 42      # Semilla para reproducibilidad
+LEARNING_RATE = 0.001  # Se pueden usar otros valores como 0.01, 0.001, etc.
+EPOCHS = 1000            # Establecer el número de epócas del entrenamiento del modelo
+BATCH_SIZE = 8         # Definimos el BATCH_SIZE
