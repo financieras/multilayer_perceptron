@@ -36,6 +36,6 @@ FEATURE_NAMES = {
 
 
 RANDOM_STATE = 42      # Semilla para reproducibilidad
-LEARNING_RATE = 0.001  # Se pueden usar otros valores como 0.01, 0.001, etc.
+LEARNING_RATE = 0.01  # Se pueden usar otros valores como 0.01, 0.001, etc.
 EPOCHS = 1000            # Establecer el número de epócas del entrenamiento del modelo
 BATCH_SIZE = 8         # Definimos el BATCH_SIZE

@@ -124,6 +124,7 @@ class NeuralNetwork:
         for layer in reversed(self.layers):
             gradient = layer.backward(gradient, learning_rate)
     
+
     def train(self, X_train, y_train, X_valid=None, y_valid=None, epochs=100, batch_size=32, learning_rate=0.01, lr_decay=0.95):
         """Entrenar la red neuronal"""
         num_samples = X_train.shape[0]
@@ -131,6 +132,8 @@ class NeuralNetwork:
         
         train_losses = []
         valid_losses = []
+        train_accuracies = []
+        valid_accuracies = []
         current_lr = learning_rate
         
         for epoch in range(epochs):
@@ -138,6 +141,7 @@ class NeuralNetwork:
             if epoch > 0 and epoch % 10 == 0:
                 current_lr *= lr_decay
                 print(f"Tasa de aprendizaje ajustada a: {current_lr:.6f}")
+            
             # Mezclar los datos de entrenamiento
             indices = np.random.permutation(num_samples)
             X_shuffled = X_train[indices]
@@ -168,21 +172,31 @@ class NeuralNetwork:
                 self.backward(dL_dout, current_lr)
             
             train_losses.append(epoch_loss)
-        
-        # Calcular pérdida en el conjunto de validación si está disponible
-        valid_loss = None
-        if X_valid is not None and y_valid is not None:
-            y_valid_pred = self.forward(X_valid)
-            valid_loss = binary_crossentropy(y_valid, y_valid_pred)
-            valid_losses.append(valid_loss)
-        
-        # Imprimir progreso
-        if valid_loss is not None:
-            print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f} - val_loss: {valid_loss:.4f}")
-        else:
-            print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f}")
             
-        return train_losses, valid_losses
+            # Calcular accuracy en el conjunto de entrenamiento
+            train_preds = self.predict(X_train)
+            train_acc = calculate_accuracy(y_train, train_preds)
+            train_accuracies.append(train_acc)
+            
+            # Calcular métricas en el conjunto de validación si está disponible
+            valid_loss = None
+            valid_acc = None
+            if X_valid is not None and y_valid is not None:
+                y_valid_pred = self.forward(X_valid)
+                valid_loss = binary_crossentropy(y_valid, y_valid_pred)
+                valid_losses.append(valid_loss)
+                
+                valid_acc = calculate_accuracy(y_valid, y_valid_pred)
+                valid_accuracies.append(valid_acc)
+            
+            # Imprimir progreso
+            if valid_loss is not None:
+                print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f} - acc: {train_acc:.4f} - val_loss: {valid_loss:.4f} - val_acc: {valid_acc:.4f}")
+            else:
+                print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f} - acc: {train_acc:.4f}")
+        
+        return train_losses, valid_losses, train_accuracies, valid_accuracies
+
     
     def predict(self, X):
         """Realizar predicciones"""
@@ -234,6 +248,25 @@ class NeuralNetwork:
         
         print(f"Modelo cargado desde {filepath}")
 
+    # Método para evaluar el modelo
+    def evaluate(self, X, y):
+        """
+        Evalúa el modelo en un conjunto de datos
+        
+        Args:
+            X: Datos de entrada
+            y: Etiquetas verdaderas
+            
+        Returns:
+            tuple: (loss, accuracy)
+        """
+        y_pred = self.predict(X)
+        loss = binary_crossentropy(y, y_pred)
+        accuracy = calculate_accuracy(y, y_pred)
+        return loss, accuracy
+
+        
+
 # Función para crear una red neuronal con la arquitectura especificada
 def create_network(input_shape, hidden_layers, output_shape):
     """Crear una red neuronal con la arquitectura especificada"""
@@ -250,3 +283,24 @@ def create_network(input_shape, hidden_layers, output_shape):
     model.add(DenseLayer(hidden_layers[-1], output_shape, activation="sigmoid", weights_initializer="xavier_uniform"))
     
     return model
+
+
+
+# Cálculo de Accuracy
+def calculate_accuracy(y_true, y_pred):
+    """
+    Calcula la exactitud (accuracy) para clasificación binaria
+    
+    Args:
+        y_true: Etiquetas verdaderas (0 o 1)
+        y_pred: Probabilidades predichas
+        
+    Returns:
+        float: Accuracy (0.0 a 1.0)
+    """
+    # Convertir probabilidades a predicciones binarias (0 o 1)
+    predictions = (y_pred > 0.5).astype(int)
+    # Calcular accuracy
+    return np.mean(predictions == y_true)
+
+
