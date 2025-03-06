@@ -1,13 +1,6 @@
-"""
-Funciones de preprocesamiento para el proyecto de perceptrón multicapa.
-Estas funciones se utilizan para dividir datos, normalizar y preparar los conjuntos
-de entrenamiento y prueba.
-"""
-
 import numpy as np
 import pandas as pd
-import json
-import os
+
 
 def train_test_split(X, y, test_size=0.2, random_state=None):
     """
@@ -33,7 +26,7 @@ def train_test_split(X, y, test_size=0.2, random_state=None):
     if random_state is not None:
         np.random.seed(random_state)
     
-    # Convertir a numpy para el procesamiento
+    # Convertir los DataFrames a arrays NumPy
     X_data = X.values
     y_data = y.values
     
@@ -53,7 +46,7 @@ def train_test_split(X, y, test_size=0.2, random_state=None):
         n_class_test = int(len(indices) * test_size)
         test_indices.extend(indices[:n_class_test])
     
-    # Crear máscara para dividir los datos
+    # Crear máscara booleana para dividir los datos
     mask = np.zeros(len(X), dtype=bool)
     mask[test_indices] = True
     
@@ -65,26 +58,5 @@ def train_test_split(X, y, test_size=0.2, random_state=None):
     
     return X_train, X_test, y_train, y_test
 
-
-def load_normalization_params(filepath):
-    """
-    Carga los parámetros de normalización desde un archivo JSON.
-    
-    Parámetros:
-    -----------
-    filepath : str
-        Ruta del archivo donde están guardados los parámetros
-        
-    Retorna:
-    --------
-    means : dict
-        Medias por característica
-    stds : dict
-        Desviaciones estándar por característica
-    """
-    with open(filepath, 'r') as f:
-        params = json.load(f)
-    
-    return params['means'], params['stds']
 
 
