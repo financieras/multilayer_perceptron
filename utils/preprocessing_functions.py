@@ -35,7 +35,7 @@ def train_test_split(X, y, test_size=0.2, random_state=None, stratify=True):
     X_data = X.values
     y_data = y.values
     
-    if stratify:
+    if stratify:    # si STRATIFY = True definida en config.py
         print("Utilizando estratificación para mantener la proporción de clases")
         # Obtener clases únicas y sus índices
         classes = np.unique(y_data)

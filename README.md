@@ -3,7 +3,7 @@
 ## INSTALACIÓN
 
 
-### Clonar el repositorio del proyecto 'perceptron'
+### Clonar el repositorio del proyecto 'multilayer_perceptron'
 ```bash
 git clone https://github.com/financieras/multilayer_perceptron.git
 ```

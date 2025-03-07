@@ -135,6 +135,9 @@ class NeuralNetwork:
         train_accuracies = []
         valid_accuracies = []
         current_lr = learning_rate
+
+        # Determinar frecuencia de impresión basada en el número total de épocas
+        print_frequency = 10 if epochs > 100 else 1
         
         for epoch in range(epochs):
             # Aplicar decay a la tasa de aprendizaje
@@ -188,13 +191,14 @@ class NeuralNetwork:
                 
                 valid_acc = calculate_accuracy(y_valid, y_valid_pred)
                 valid_accuracies.append(valid_acc)
-            
-            # Imprimir progreso
-            if valid_loss is not None:
-                print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f} - acc: {train_acc:.4f} - val_loss: {valid_loss:.4f} - val_acc: {valid_acc:.4f}")
-            else:
-                print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f} - acc: {train_acc:.4f}")
-        
+
+            # Imprimir progreso solo en la frecuencia determinada o en la última época
+            if (epoch % print_frequency == 0) or (epoch == epochs - 1):
+                if valid_loss is not None:
+                    print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f} - acc: {train_acc:.4f} - val_loss: {valid_loss:.4f} - val_acc: {valid_acc:.4f}")
+                else:
+                    print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f} - acc: {train_acc:.4f}")
+    
         return train_losses, valid_losses, train_accuracies, valid_accuracies
 
     
@@ -289,7 +293,7 @@ def create_network(input_shape, hidden_layers, output_shape):
 # Cálculo de Accuracy
 def calculate_accuracy(y_true, y_pred):
     """
-    Calcula la exactitud (accuracy) para clasificación binaria
+    Calcula la exactitud (Accuracy) para clasificación binaria
     
     Args:
         y_true: Etiquetas verdaderas (0 o 1)
