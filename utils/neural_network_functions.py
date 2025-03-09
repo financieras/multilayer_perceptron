@@ -332,7 +332,7 @@ class NeuralNetwork:
 # Función para crear una red neuronal con la arquitectura especificada
 def create_network(input_shape, hidden_layers, output_shape):
     """Crear una red neuronal con la arquitectura especificada"""
-    model = NeuralNetwork()
+    model = NeuralNetwork()    # instancia el objeto model de la clase NeuralNetwork
     
     # Añadir primera capa oculta
     model.add(DenseLayer(input_shape, hidden_layers[0], activation="sigmoid", weights_initializer="xavier_uniform"))
