@@ -44,7 +44,7 @@ HIDDEN_LAYERS = [30, 15, 8]  # Se pueden poner cualquier número de capas/neuron
 
 
 LEARNING_RATE = 0.01   # Se pueden usar otros valores como 0.01, 0.001, etc.
-EPOCHS = 9000          # Establecer el número de epócas del entrenamiento del modelo
+EPOCHS = 10_000        # Establecer el número de epócas del entrenamiento del modelo
 BATCH_SIZE = 8         # Definimos el BATCH_SIZE
 
 # Tasa de decaimiento del learning rate

@@ -181,13 +181,12 @@ class NeuralNetwork:
         current_lr = learning_rate
         
         # Determinar frecuencia de impresión basada en el número total de épocas
-        print_frequency = 10 if epochs > 100 else 1
+        print_frequency = 10 if epochs <= 100 else 100
         
         for epoch in range(epochs):
             # Aplicar decay a la tasa de aprendizaje
             if epoch > 0 and epoch % 10 == 0:
                 current_lr *= lr_decay
-                print(f"Tasa de aprendizaje ajustada a: {current_lr:.6f}")
             
             # Mezclar los datos de entrenamiento
             indices = np.random.permutation(num_samples)
@@ -243,10 +242,20 @@ class NeuralNetwork:
             
             # Imprimir progreso solo en la frecuencia determinada o en la última época
             if (epoch % print_frequency == 0) or (epoch == epochs - 1):
+                # Primero la época, luego la tasa de aprendizaje y después el resto
+                progress = f"Época {epoch+1:04d}/{epochs}"
+                
+                # Añadir tasa de aprendizaje
+                progress += f" - lr: {current_lr:.15f}"
+                
+                # Añadir métricas de entrenamiento y validación
                 if valid_loss is not None:
-                    print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.9f} - acc: {train_acc:.6f} - val_loss: {valid_loss:.9f} - val_acc: {valid_acc:.6f}")
+                    progress += f" - loss: {epoch_loss:.9f} - acc: {train_acc:.9f} - val_loss: {valid_loss:.9f} - val_acc: {valid_acc:.9f}"
                 else:
-                    print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.9f} - acc: {train_acc:.6f}")
+                    progress += f" - loss: {epoch_loss:.9f} - acc: {train_acc:.9f}"
+                
+                # Imprimir con salto de línea al final
+                print(progress)
         
         return train_losses, valid_losses, train_accuracies, valid_accuracies
 
