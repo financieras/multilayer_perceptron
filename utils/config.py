@@ -36,7 +36,7 @@ FEATURE_NAMES = {
 
 
 RANDOM_STATE = 42      # Semilla para reproducibilidad
-TEST_SIZE=0.2          # Porcentaje de registros destinados a test
+TEST_SIZE = 0.2        # Porcentaje de registros destinados a test
 STRATIFY = True        # Controla si la división de los datos mantiene la proporción de clases
 
 # Arquitectura de la red neuronal
@@ -44,9 +44,11 @@ HIDDEN_LAYERS = [30, 15, 8]  # Se pueden poner cualquier número de capas/neuron
 
 
 LEARNING_RATE = 0.01   # Se pueden usar otros valores como 0.01, 0.001, etc.
-EPOCHS = 1000          # Establecer el número de epócas del entrenamiento del modelo
+EPOCHS = 9000          # Establecer el número de epócas del entrenamiento del modelo
 BATCH_SIZE = 8         # Definimos el BATCH_SIZE
 
 # Tasa de decaimiento del learning rate
-LR_DECAY = 0.95  # Reduce la tasa de aprendizaje en un 5% cada cierto número de épocas
+LR_DECAY = 0.95        # Reduce la tasa de aprendizaje en un 5% cada cierto número de épocas
 
+EARLY_STOPPING = True  # Activar early stopping
+PATIENCE = 50          # Paciencia (épocas sin mejora)

@@ -124,8 +124,52 @@ class NeuralNetwork:
         for layer in reversed(self.layers):
             gradient = layer.backward(gradient, learning_rate)
     
+    # Método Early Stopping con la restauración de los mejores pesos (usado en el método train)
+    def _apply_early_stopping(self, valid_loss, epoch, epochs, patience):
+        """
+        Aplica early stopping y devuelve True si el entrenamiento debe detenerse
+        """
+        if not hasattr(self, '_early_stopping_state'):
+            # Inicializar estado de early stopping
+            self._early_stopping_state = {
+                'best_val_loss': float('inf'),
+                'wait': 0,
+                'best_weights': None,
+                'best_biases': None
+            }
+        
+        state = self._early_stopping_state
+        
+        if valid_loss < state['best_val_loss']:
+            state['best_val_loss'] = valid_loss
+            state['wait'] = 0
+            
+            # Guardar los mejores pesos
+            state['best_weights'] = []
+            state['best_biases'] = []
+            for layer in self.layers:
+                state['best_weights'].append(layer.weights.copy())
+                state['best_biases'].append(layer.bias.copy())
+            
+            return False  # No detener el entrenamiento
+        else:
+            state['wait'] += 1
+            if state['wait'] >= patience:
+                print(f"\nDetención temprana en época {epoch+1}/{epochs}")
+                print(f"Mejor pérdida de validación: {state['best_val_loss']:.4f}")
+                
+                # Restaurar los mejores pesos
+                for i, layer in enumerate(self.layers):
+                    layer.weights = state['best_weights'][i]
+                    layer.bias = state['best_biases'][i]
+                
+                return True  # Detener el entrenamiento
+            
+            return False  # No detener el entrenamiento
 
-    def train(self, X_train, y_train, X_valid=None, y_valid=None, epochs=100, batch_size=32, learning_rate=0.01, lr_decay=0.95):
+    
+    def train(self, X_train, y_train, X_valid=None, y_valid=None, epochs=100, batch_size=32, 
+              learning_rate=0.01, lr_decay=0.95, early_stopping=True, patience=50):
         """Entrenar la red neuronal"""
         num_samples = X_train.shape[0]
         num_batches = int(np.ceil(num_samples / batch_size))
@@ -135,7 +179,7 @@ class NeuralNetwork:
         train_accuracies = []
         valid_accuracies = []
         current_lr = learning_rate
-
+        
         # Determinar frecuencia de impresión basada en el número total de épocas
         print_frequency = 10 if epochs > 100 else 1
         
@@ -168,7 +212,6 @@ class NeuralNetwork:
                 epoch_loss += batch_loss * (end_idx - start_idx) / num_samples
                 
                 # Calcular gradiente de la función de pérdida respecto a la salida
-                # Para binary crossentropy con sigmoid, el gradiente es (y_pred - y_true)
                 dL_dout = y_pred - y_batch
                 
                 # Backward pass
@@ -191,14 +234,20 @@ class NeuralNetwork:
                 
                 valid_acc = calculate_accuracy(y_valid, y_valid_pred)
                 valid_accuracies.append(valid_acc)
-
+                
+                # Early stopping
+                if early_stopping:
+                    should_stop = self._apply_early_stopping(valid_loss, epoch, epochs, patience)
+                    if should_stop:
+                        break
+            
             # Imprimir progreso solo en la frecuencia determinada o en la última época
             if (epoch % print_frequency == 0) or (epoch == epochs - 1):
                 if valid_loss is not None:
-                    print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f} - acc: {train_acc:.4f} - val_loss: {valid_loss:.4f} - val_acc: {valid_acc:.4f}")
+                    print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.9f} - acc: {train_acc:.6f} - val_loss: {valid_loss:.9f} - val_acc: {valid_acc:.6f}")
                 else:
-                    print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.4f} - acc: {train_acc:.4f}")
-    
+                    print(f"epoch {epoch+1:02d}/{epochs} - loss: {epoch_loss:.9f} - acc: {train_acc:.6f}")
+        
         return train_losses, valid_losses, train_accuracies, valid_accuracies
 
     
